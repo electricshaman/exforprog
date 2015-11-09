@@ -32,4 +32,13 @@ defmodule HeartRateWorkerTest do
     assert min(output) == expected_min
     assert max(output) == expected_max
   end
+
+  test "Calculate correct heart rate given age, resting heart rate, and intensity" do
+    {age, resting} = {22, 65}
+    expected = [{55, 138}, {60, 145}, {65, 151}, {85, 178}, {90, 185}, {95, 191}]
+
+    actual = map(expected, fn({i, exp_hr}) -> {HeartRate.Worker.calculate_hr(age, resting, i), exp_hr} end)
+    assert all?(actual, fn({actual_hr, exp_hr}) -> actual_hr == exp_hr end)
+  end
+
 end
