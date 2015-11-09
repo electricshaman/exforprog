@@ -18,7 +18,7 @@ defmodule HeartRate.Worker do
     {:ok, %{}}
   end
 
-  def terminate(reason, state) do
+  def terminate(reason, _state) do
     Logger.warn("Heart rate worker terminating: #{inspect reason}")
     :ok
   end
