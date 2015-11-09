@@ -1,25 +1,29 @@
-defmodule KarvonenHeartRateWorkerTest do
+defmodule HeartRateWorkerTest do
   use ExUnit.Case
   import Enum
-  doctest KarvonenHeartRate.Worker
+  doctest HeartRate.Worker
 
   test "Generate intensity scale with step value 1" do
-    {:ok, scale} = KarvonenHeartRate.Worker.generate_intensity_scale(1, 10, 1)
+    {:ok, scale} = HeartRate.Worker.build_intensity_scale(1, 10, 1)
     assert length(scale) == 10
     assert min(scale) == 1
     assert max(scale) == 10
   end
 
   test "Generate intensity scale with step value 5 from 0 to 10" do
-    {:ok, scale} = KarvonenHeartRate.Worker.generate_intensity_scale(0, 10, 5)
+    {:ok, scale} = HeartRate.Worker.build_intensity_scale(0, 10, 5)
     assert length(scale) == 3
     assert min(scale) == 0
     assert max(scale) == 10
   end
 
   test "Generate intensity scale from step value 5 from 55 to 95" do
-    {:ok, scale} = KarvonenHeartRate.Worker.generate_intensity_scale(55, 95, 5)
+    {:ok, scale} = HeartRate.Worker.build_intensity_scale(55, 95, 5)
     assert_scale(scale, 55, 95, 5)
+  end
+
+  test "Intensity scale with step value of 0 should return an error" do
+    assert {:error, :invalid_step} = HeartRate.Worker.build_intensity_scale(5, 95, 0)
   end
 
   defp assert_scale(output, expected_min, expected_max, step) do

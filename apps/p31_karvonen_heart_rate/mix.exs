@@ -1,8 +1,8 @@
-defmodule KarvonenHeartRate.Mixfile do
+defmodule HeartRate.Mixfile do
   use Mix.Project
 
   def project do
-    [app: :p31_karvonen_heart_rate,
+    [app: :heart_rate,
      version: "0.0.1",
      deps_path: "../../deps",
      lockfile: "../../mix.lock",
@@ -17,7 +17,7 @@ defmodule KarvonenHeartRate.Mixfile do
   # Type "mix help compile.app" for more information
   def application do
     [applications: [:logger],
-     mod: {KarvonenHeartRate, []}]
+     mod: {HeartRate, []}]
   end
 
   # Dependencies can be Hex packages:

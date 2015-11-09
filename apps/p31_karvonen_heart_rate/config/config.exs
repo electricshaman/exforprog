@@ -21,7 +21,7 @@ use Mix.Config
 #     config :logger, level: :info
 #
 
-config :p31_karvonen_heart_rate, intensity_range_start: 55, intensity_range_end: 95, intensity_range_step: 5
+config :heart_rate, intensity_range_start: 55, intensity_range_end: 95, intensity_range_step: 5
 
 # It is also possible to import configuration files, relative to this
 # directory. For example, you can emulate configuration per environment
