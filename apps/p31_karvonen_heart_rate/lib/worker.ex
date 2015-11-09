@@ -5,7 +5,7 @@ defmodule HeartRate.Worker do
   # Client Functions
 
   def get_hr(age, resting_hr, scale_start, scale_end, scale_step) do
-    GenServer.call(__MODULE__, {:hr, age, resting_hr, scale_start, scale_end, scale_step})
+    GenServer.call(__MODULE__, {:get_hr, age, resting_hr, {scale_start, scale_end, scale_step}})
   end
 
   # Server
@@ -23,25 +23,24 @@ defmodule HeartRate.Worker do
     :ok
   end
 
-  def handle_call({:hr, age, resting_hr, scale_start, scale_end, scale_step}, _from, state) do
-    response = case build_intensity_scale(scale_start, scale_end, scale_step) do
-      {:ok, scale} -> build_hr(age, resting_hr, scale)
-      other -> other
-    end
+  def handle_call({:get_hr, age, resting_hr, scale_params}, _from, state) do
+    response = build_intensity_scale(scale_params) |> build_hr(age, resting_hr)
     {:reply, response, state}
   end
 
-  def build_hr(age, resting_hr, scale) do
-    rates = Enum.map(scale, fn i -> calculate_hr(age, resting_hr, i) end)
+  def build_hr(error = {:error, _}, _, _), do: error
+
+  def build_hr({:ok, scale}, age, resting_hr) do
+    rates = Enum.map(scale, fn i -> calculate_hr(i, age, resting_hr) end)
     {:ok, Enum.zip(scale, rates)}
   end
 
-  def calculate_hr(age, resting_hr, intensity) do
+  def calculate_hr(intensity, age, resting_hr) do
     result = (((220 - age) - resting_hr) * intensity/100) + resting_hr
     :erlang.trunc(Float.round(result, 0))
   end
 
-  def build_intensity_scale(range_start, range_end, step) do
+  def build_intensity_scale({range_start, range_end, step}) do
     build_scale(range_start, range_end, step, [])
   end
 
