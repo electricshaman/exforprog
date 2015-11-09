@@ -5,16 +5,12 @@ defmodule HeartRateWorkerTest do
 
   test "Generate intensity scale with step value 1" do
     {:ok, scale} = HeartRate.Worker.build_intensity_scale(1, 10, 1)
-    assert length(scale) == 10
-    assert min(scale) == 1
-    assert max(scale) == 10
+    assert_scale(scale, 1, 10, 1)
   end
 
   test "Generate intensity scale with step value 5 from 0 to 10" do
     {:ok, scale} = HeartRate.Worker.build_intensity_scale(0, 10, 5)
-    assert length(scale) == 3
-    assert min(scale) == 0
-    assert max(scale) == 10
+    assert_scale(scale, 0, 10, 5)
   end
 
   test "Generate intensity scale from step value 5 from 55 to 95" do
