@@ -36,8 +36,7 @@ defmodule HeartRate.Worker do
   end
 
   def calculate_hr(intensity, age, resting_hr) do
-    result = (((220 - age) - resting_hr) * intensity/100) + resting_hr
-    :erlang.trunc(Float.round(result, 0))
+    round((((220 - age) - resting_hr) * intensity/100) + resting_hr)
   end
 
   def build_intensity_scale({range_start, range_end, step}) do
