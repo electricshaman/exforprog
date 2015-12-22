@@ -2,7 +2,7 @@ defmodule HeartRate.Mixfile do
   use Mix.Project
 
   def project do
-    [app: :heart_rate,
+    [app: :p31_karvonen_heart_rate,
      version: "0.0.1",
      deps_path: "../../deps",
      lockfile: "../../mix.lock",
