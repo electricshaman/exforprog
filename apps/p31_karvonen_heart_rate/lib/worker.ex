@@ -2,13 +2,67 @@ defmodule HeartRate.Worker do
   use GenServer
   require Logger
 
+  @attempt_limit 5
+  @scale_start 5
+  @scale_end 95
+  @scale_step 5
+
   # Client Functions
 
-  def run_prompt do
-    {:ok, age} = prompt(:int, "How old are you?")
-    {:ok, rest_hr} = prompt(:int, "What is your resting heart rate?")
-    {:ok, rates} = get_hr(age, rest_hr, 5, 95, 5)
+  def start do
+    {:ok, [age, rest_hr]} = collect_input
+    {:ok, rates} = get_hr(age, rest_hr, @scale_start, @scale_end, @scale_step)
+
+    format_header_for_table([age, rest_hr])
+    format_rates_into_table(rates)
   end
+
+  def format_header_for_table(inputs) do
+    :io.format("~n")
+    :io.format("Resting Pulse: ~-6wAge: ~-3w~n", inputs)
+    :io.format("~n")
+    :io.format("Intensity    | Rate~n")
+    :io.format("-------------|---------~n")
+  end
+
+  def format_rates_into_table(rates) when is_list(rates) do
+    Enum.each(rates, fn({intensity, rate}) ->
+      percentage = to_string(intensity) <> "%"
+      :io.format("~-13s| ~-3w bpm~n", [percentage, rate])
+    end)
+  end
+
+  def collect_input do
+    prompts = [{:int, "How old are you?"},
+               {:int, "What is your resting heart rate?"}]
+
+    case collect_input_with_prompts(prompts) do
+      error = {:error, :failed_to_collect} ->
+        IO.puts "You can't be trusted."
+        error
+      answers -> {:ok, answers}
+    end
+  end
+
+  def collect_input_with_prompts(prompts) when is_list(prompts) do
+    collect_input_with_prompts(prompts, [], 0)
+  end
+
+  def collect_input_with_prompts(prompts = [{type, msg}|t], answers, attempts) when attempts < @attempt_limit do
+    case prompt(type, msg) do
+      {:ok, value} ->
+        collect_input_with_prompts(t, [value|answers], attempts)
+      {:error, {:invalid_input, input}} ->
+        IO.puts("Invalid input: #{input}")
+        collect_input_with_prompts(prompts, answers, attempts + 1)
+    end
+  end
+
+  def collect_input_with_prompts(prompts, answers, @attempt_limit) do
+    {:error, :failed_to_collect}
+  end
+
+  def collect_input_with_prompts([], answers, attempts), do: Enum.reverse(answers)
 
   def prompt(type, prompt) do
     IO.gets("#{prompt} ")
@@ -19,7 +73,7 @@ defmodule HeartRate.Worker do
   def parse_input(input, :int) when is_bitstring(input) do
     case Integer.parse(input) do
       {num, _} when is_integer(num) -> {:ok, num}
-      fail -> {:error, fail}
+      fail -> {:error, {:invalid_input, input}}
     end
   end
 
