@@ -7,6 +7,7 @@ defmodule HeartRate.Mixfile do
      deps_path: "../../deps",
      lockfile: "../../mix.lock",
      elixir: "~> 1.1",
+     escript: [main_module: HeartRate.CLI],
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
      deps: deps]
