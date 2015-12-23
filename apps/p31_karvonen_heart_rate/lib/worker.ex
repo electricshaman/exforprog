@@ -59,11 +59,11 @@ defmodule HeartRate.Worker do
     end
   end
 
-  def collect_input_with_prompts(prompts, answers, @attempt_limit) do
+  def collect_input_with_prompts(_prompts, _answers, @attempt_limit) do
     {:error, :failed_to_collect}
   end
 
-  def collect_input_with_prompts([], answers, attempts), do: Enum.reverse(answers)
+  def collect_input_with_prompts([], answers, _attempts), do: Enum.reverse(answers)
 
   def prompt(type, prompt) do
     IO.gets("#{prompt} ")
@@ -74,7 +74,7 @@ defmodule HeartRate.Worker do
   def parse_input(input, :int) when is_bitstring(input) do
     case Integer.parse(input) do
       {num, _} when is_integer(num) -> {:ok, num}
-      fail -> {:error, {:invalid_input, input}}
+      _ -> {:error, {:invalid_input, input}}
     end
   end
 
