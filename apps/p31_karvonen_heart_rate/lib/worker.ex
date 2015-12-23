@@ -2,10 +2,11 @@ defmodule HeartRate.Worker do
   use GenServer
   require Logger
 
-  @attempt_limit 5
-  @scale_start 5
-  @scale_end 95
-  @scale_step 5
+  @app :p31_karvonen_heart_rate
+  @attempt_limit Application.get_env(@app, :invalid_input_attempts)
+  @scale_start Application.get_env(@app, :intensity_scale_start)
+  @scale_end Application.get_env(@app, :intensity_scale_end)
+  @scale_step Application.get_env(@app, :intensity_scale_step)
 
   # Client Functions
 
