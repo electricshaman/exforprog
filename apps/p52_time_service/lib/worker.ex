@@ -2,10 +2,6 @@ defmodule TimeService.Worker do
   require Logger
   import TimeService.Time, only: [get_formatted_utc_time: 0]
 
-  #@behaviour :ranch_protocol
-
-  # Server
-
   def start_link(listener, socket, transport, opts) do
     pid = spawn_link(__MODULE__, :init, [listener, socket, transport, opts])
     {:ok, pid}
